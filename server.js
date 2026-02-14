@@ -157,7 +157,7 @@ io.on('connection', (socket) => {
     const player = {
       id: socket.id,
       name,
-      position: { x: 0, y: 20, z: 0 },
+      position: { x: 0, y: 30, z: 0 },
       rotation: { x: 0, y: 0 },
     };
 

@@ -243,8 +243,10 @@ window.addEventListener('DOMContentLoaded', () => {
   
   try {
     console.log('Creating game instance...');
-    const game = new Game();
+    window.game = new Game();
     console.log('Game created successfully');
+    console.log('Terrain blocks:', window.game.world.blocks.size);
+    console.log('Scene children:', window.game.scene.children.length);
   } catch (e) {
     console.error('Failed to create game:', e);
     alert('Failed to start game. Check console for errors.');
