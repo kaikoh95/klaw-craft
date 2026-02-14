@@ -99,10 +99,13 @@ class Game {
     nameInput.value = randomName;
     
     joinBtn.addEventListener('click', () => {
+      console.log('Join button clicked!');
       const playerName = nameInput.value.trim() || randomName;
+      console.log('Connecting as:', playerName);
       
       // Connect to multiplayer
       this.multiplayer.connect(playerName, () => {
+        console.log('Connected! Hiding welcome screen');
         // Hide welcome screen
         welcomeScreen.style.display = 'none';
         
@@ -234,5 +237,16 @@ class Game {
 
 // Start the game when page loads
 window.addEventListener('DOMContentLoaded', () => {
-  const game = new Game();
+  console.log('DOM loaded, checking dependencies...');
+  console.log('THREE available:', typeof THREE);
+  console.log('io available:', typeof io);
+  
+  try {
+    console.log('Creating game instance...');
+    const game = new Game();
+    console.log('Game created successfully');
+  } catch (e) {
+    console.error('Failed to create game:', e);
+    alert('Failed to start game. Check console for errors.');
+  }
 });

@@ -21,11 +21,24 @@ class Multiplayer {
   }
   
   connect(playerName, onConnected) {
-    this.socket = io();
+    console.log('multiplayer.connect() called with name:', playerName);
+    console.log('io available:', typeof io);
+    
+    try {
+      this.socket = io();
+      console.log('Socket created:', this.socket);
+    } catch (e) {
+      console.error('Failed to create socket:', e);
+      return;
+    }
     
     this.socket.on('connect', () => {
-      console.log('Connected to server');
+      console.log('Socket connected to server!');
       this.socket.emit('join', playerName);
+    });
+    
+    this.socket.on('connect_error', (error) => {
+      console.error('Socket connection error:', error);
     });
     
     this.socket.on('init', (data) => {
