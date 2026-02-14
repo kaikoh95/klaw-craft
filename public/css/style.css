@@ -23,6 +23,7 @@ body {
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  pointer-events: auto;
 }
 
 .welcome-content {
@@ -83,7 +84,7 @@ body {
   color: #555;
 }
 
-/* Canvas - ensure it's BEHIND the HUD */
+/* Canvas - ensure it's BEHIND the HUD and doesn't block welcome screen */
 canvas {
   display: block;
   position: fixed;
@@ -92,6 +93,7 @@ canvas {
   width: 100vw;
   height: 100vh;
   z-index: 1;
+  pointer-events: none;
 }
 
 #hud {

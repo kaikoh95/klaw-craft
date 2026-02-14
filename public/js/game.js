@@ -108,6 +108,9 @@ class Game {
         
         // Show HUD
         document.getElementById('hud').style.display = 'block';
+        
+        // Enable canvas pointer events
+        this.renderer.domElement.style.pointerEvents = 'auto';
       });
     });
     
