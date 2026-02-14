@@ -7,8 +7,6 @@ class Controls {
     // Mouse/touch state
     this.isPointerLocked = false;
     this.isTouching = false;
-    this.touchStartX = 0;
-    this.touchStartY = 0;
     this.lastTouchX = 0;
     this.lastTouchY = 0;
     
@@ -46,6 +44,14 @@ class Controls {
           e.preventDefault();
           this.player.jump(); 
           break;
+        case 'KeyE':
+          // Break block with E key
+          if (this.onBreak) this.onBreak();
+          break;
+        case 'KeyQ':
+          // Place block with Q key
+          if (this.onPlace) this.onPlace();
+          break;
       }
     });
     
@@ -60,7 +66,7 @@ class Controls {
     });
     
     // Mouse for looking (pointer lock)
-    this.canvas.addEventListener('click', () => {
+    this.canvas.addEventListener('click', (e) => {
       if (!this.isPointerLocked) {
         this.canvas.requestPointerLock();
       }
@@ -94,24 +100,27 @@ class Controls {
   }
   
   setupMobileControls() {
+    if (!this.joystickZone) return;
+
     // Virtual joystick
     this.joystickZone.addEventListener('touchstart', (e) => {
       e.preventDefault();
+      e.stopPropagation();
       const touch = e.touches[0];
       this.joystickActive = true;
       this.joystickStartX = touch.clientX;
       this.joystickStartY = touch.clientY;
-    });
+    }, { passive: false });
     
     this.joystickZone.addEventListener('touchmove', (e) => {
       e.preventDefault();
+      e.stopPropagation();
       if (!this.joystickActive) return;
       
       const touch = e.touches[0];
       const deltaX = touch.clientX - this.joystickStartX;
       const deltaY = touch.clientY - this.joystickStartY;
       
-      // Limit joystick radius
       const maxRadius = 60;
       const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
       
@@ -123,11 +132,9 @@ class Controls {
         this.joystickY = deltaY;
       }
       
-      // Update joystick visual
       this.joystickStick.style.transform = 
         `translate(calc(-50% + ${this.joystickX}px), calc(-50% + ${this.joystickY}px))`;
       
-      // Update player movement
       const normalizedX = this.joystickX / maxRadius;
       const normalizedY = this.joystickY / maxRadius;
       
@@ -135,52 +142,46 @@ class Controls {
       this.player.moveBackward = normalizedY > 0.3;
       this.player.moveLeft = normalizedX < -0.3;
       this.player.moveRight = normalizedX > 0.3;
-    });
+    }, { passive: false });
     
     this.joystickZone.addEventListener('touchend', (e) => {
       e.preventDefault();
+      e.stopPropagation();
       this.joystickActive = false;
       this.joystickX = 0;
       this.joystickY = 0;
-      
-      // Reset joystick visual
       this.joystickStick.style.transform = 'translate(-50%, -50%)';
-      
-      // Stop movement
       this.player.moveForward = false;
       this.player.moveBackward = false;
       this.player.moveLeft = false;
       this.player.moveRight = false;
-    });
+    }, { passive: false });
     
-    // Touch controls for camera (swipe on right side)
+    // Touch controls for camera (swipe on canvas)
     let lookTouchId = null;
     
     this.canvas.addEventListener('touchstart', (e) => {
-      for (let touch of e.touches) {
-        // Right half of screen for looking
-        if (touch.clientX > window.innerWidth / 2) {
+      for (let touch of e.changedTouches) {
+        if (lookTouchId === null) {
           lookTouchId = touch.identifier;
           this.lastTouchX = touch.clientX;
           this.lastTouchY = touch.clientY;
         }
       }
-    });
+    }, { passive: true });
     
     this.canvas.addEventListener('touchmove', (e) => {
       e.preventDefault();
-      for (let touch of e.touches) {
+      for (let touch of e.changedTouches) {
         if (touch.identifier === lookTouchId) {
           const deltaX = touch.clientX - this.lastTouchX;
           const deltaY = touch.clientY - this.lastTouchY;
-          
           this.player.rotate(deltaX * 2, deltaY * 2);
-          
           this.lastTouchX = touch.clientX;
           this.lastTouchY = touch.clientY;
         }
       }
-    });
+    }, { passive: false });
     
     this.canvas.addEventListener('touchend', (e) => {
       for (let touch of e.changedTouches) {
@@ -188,32 +189,56 @@ class Controls {
           lookTouchId = null;
         }
       }
-    });
+    }, { passive: true });
     
-    // Action buttons
-    this.jumpBtn.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      this.player.jump();
-    });
+    // Action buttons - BOTH touch AND click handlers
+    const setupButton = (btn, downAction, upAction) => {
+      if (!btn) return;
+      
+      // Touch events
+      btn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        downAction();
+      }, { passive: false });
+      
+      if (upAction) {
+        btn.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          upAction();
+        }, { passive: false });
+      }
+      
+      // Click events (for desktop/fallback)
+      btn.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        downAction();
+      });
+      
+      if (upAction) {
+        btn.addEventListener('mouseup', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          upAction();
+        });
+      }
+    };
     
-    this.jumpBtn.addEventListener('touchend', (e) => {
-      e.preventDefault();
-      this.player.stopJump();
-    });
+    setupButton(this.jumpBtn, 
+      () => this.player.jump(), 
+      () => this.player.stopJump()
+    );
     
-    this.breakBtn.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      if (this.onBreak) this.onBreak();
-    });
+    setupButton(this.breakBtn, 
+      () => { if (this.onBreak) this.onBreak(); },
+      null
+    );
     
-    this.placeBtn.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      if (this.onPlace) this.onPlace();
-    });
-    
-    // Prevent default touch behaviors
-    document.body.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-    }, { passive: false });
+    setupButton(this.placeBtn, 
+      () => { if (this.onPlace) this.onPlace(); },
+      null
+    );
   }
 }

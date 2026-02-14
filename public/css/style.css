@@ -83,6 +83,17 @@ body {
   color: #555;
 }
 
+/* Canvas - ensure it's BEHIND the HUD */
+canvas {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+}
+
 #hud {
   position: fixed;
   top: 0;
@@ -90,6 +101,7 @@ body {
   width: 100%;
   height: 100%;
   pointer-events: none;
+  z-index: 10;
 }
 
 #info {
@@ -127,6 +139,7 @@ body {
   display: flex;
   gap: 8px;
   pointer-events: auto;
+  z-index: 20;
 }
 
 .inv-slot {
@@ -141,6 +154,8 @@ body {
   cursor: pointer;
   transition: all 0.2s;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .inv-slot:hover {
@@ -157,6 +172,7 @@ body {
 #mobile-controls {
   display: none;
   pointer-events: auto;
+  z-index: 20;
 }
 
 @media (max-width: 768px), (hover: none) {
@@ -178,6 +194,8 @@ body {
   left: 30px;
   width: 150px;
   height: 150px;
+  pointer-events: auto;
+  z-index: 25;
 }
 
 #joystick-base {
@@ -214,6 +232,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  pointer-events: auto;
+  z-index: 25;
 }
 
 #action-buttons button {
@@ -229,6 +249,10 @@ body {
   cursor: pointer;
   transition: all 0.2s;
   line-height: 1.2;
+  -webkit-user-select: none;
+  user-select: none;
+  pointer-events: auto;
+  touch-action: manipulation;
 }
 
 #action-buttons button:active {
@@ -246,10 +270,4 @@ body {
 
 #place-btn {
   background: rgba(100, 150, 200, 0.4);
-}
-
-canvas {
-  display: block;
-  width: 100vw;
-  height: 100vh;
 }

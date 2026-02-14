@@ -14,6 +14,10 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';
 const MAX_PLAYERS = parseInt(process.env.MAX_PLAYERS, 10) || 20;
 const PLAYER_NAME_MAX_LEN = 24;
+const AI_BOTS_ENABLED = process.env.AI_BOTS_ENABLED !== 'false'; // enabled by default
+const AI_BOT_COUNT = parseInt(process.env.AI_BOT_COUNT, 10) || 3;
+
+const { AIBotManager } = require('./ai-bots');
 
 // ─── Logger ──────────────────────────────────────────────────────────────────
 const log = {
@@ -255,8 +259,32 @@ function shutdown(signal) {
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
 
+// ─── Terrain height (mirrors client-side World.getTerrainHeight) ─────────────
+function serverNoise(x, z) {
+  const X = Math.floor(x) & 255;
+  const Z = Math.floor(z) & 255;
+  const n = X + Z * 57;
+  const nn = (n << 13) ^ n;
+  return (1.0 - ((nn * (nn * nn * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
+}
+
+function getTerrainHeight(x, z) {
+  let height = 0;
+  height += serverNoise(x * 0.01, z * 0.01) * 8;
+  height += serverNoise(x * 0.05, z * 0.05) * 4;
+  height += serverNoise(x * 0.1, z * 0.1) * 2;
+  return Math.floor(height) + 5;
+}
+
 // ─── Start ───────────────────────────────────────────────────────────────────
 server.listen(PORT, () => {
   log.info(`🎮 KlawCraft server running on http://localhost:${PORT} [${NODE_ENV}]`);
   log.info(`👥 Max players: ${MAX_PLAYERS}`);
+
+  // Start AI bots
+  if (AI_BOTS_ENABLED) {
+    const botManager = new AIBotManager(io, players, worldBlocks, getTerrainHeight);
+    botManager.start(AI_BOT_COUNT);
+    log.info(`🤖 AI Bots: ${AI_BOT_COUNT} bots spawned`);
+  }
 });
