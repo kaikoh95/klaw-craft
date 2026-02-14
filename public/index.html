@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>KlawCraft - Multiplayer Voxel Game</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Welcome Screen -->
+  <div id="welcome-screen">
+    <div class="welcome-content">
+      <h1>⛏️ KlawCraft</h1>
+      <p>Web Minecraft Clone</p>
+      <input type="text" id="player-name" placeholder="Enter your name" maxlength="12">
+      <button id="join-btn">Join World</button>
+      <div class="tips">
+        <p><strong>Mobile:</strong> Joystick to move, swipe to look, tap to break/place</p>
+        <p><strong>Desktop:</strong> WASD to move, mouse to look, click to break/place</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game HUD -->
+  <div id="hud" style="display: none;">
+    <div id="info">
+      <div id="player-count">👤 Players: 1</div>
+      <div id="fps">FPS: 60</div>
+      <div id="position">X: 0 Y: 0 Z: 0</div>
+    </div>
+    
+    <!-- Crosshair -->
+    <div id="crosshair">+</div>
+    
+    <!-- Inventory Bar -->
+    <div id="inventory">
+      <div class="inv-slot active" data-block="grass" style="background: #7cbd6b;">🌱</div>
+      <div class="inv-slot" data-block="dirt" style="background: #8b5a3c;">🟤</div>
+      <div class="inv-slot" data-block="stone" style="background: #808080;">⛰️</div>
+      <div class="inv-slot" data-block="wood" style="background: #8b6914;">🪵</div>
+      <div class="inv-slot" data-block="sand" style="background: #f4e7c7;">🏖️</div>
+      <div class="inv-slot" data-block="water" style="background: #4a90e2;">💧</div>
+    </div>
+    
+    <!-- Mobile Controls -->
+    <div id="mobile-controls">
+      <!-- Virtual Joystick -->
+      <div id="joystick-zone">
+        <div id="joystick-base"></div>
+        <div id="joystick-stick"></div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div id="action-buttons">
+        <button id="jump-btn">⬆️<br>Jump</button>
+        <button id="break-btn">⛏️<br>Break</button>
+        <button id="place-btn">📦<br>Place</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Three.js from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+  
+  <!-- Socket.io -->
+  <script src="/socket.io/socket.io.js"></script>
+  
+  <!-- Game Scripts -->
+  <script src="js/world.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/controls.js"></script>
+  <script src="js/inventory.js"></script>
+  <script src="js/multiplayer.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
