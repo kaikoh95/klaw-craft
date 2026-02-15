@@ -218,10 +218,7 @@ class Game {
         y: this.player.position.y,
         z: this.player.position.z
       },
-      {
-        x: this.player.rotation.x,
-        y: this.player.rotation.y
-      }
+      this.player.getRotation()
     );
     
     // Update day/night cycle
