@@ -4,8 +4,8 @@ class Player {
     this.camera = camera;
     this.world = world;
     
-    // Position and movement
-    this.position = new THREE.Vector3(0, 20, 0);
+    // Position and movement  
+    this.position = new THREE.Vector3(0, 15, 0); // Start at Y:15, should land on terrain around Y:8-10
     this.velocity = new THREE.Vector3(0, 0, 0);
     this.rotation = { x: 0, y: 0 };
     

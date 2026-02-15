@@ -4,7 +4,7 @@ class World {
     this.scene = scene;
     this.blocks = new Map();
     this.chunkSize = 16;
-    this.renderDistance = 2; // Chunks in each direction
+    this.renderDistance = 1; // Reduced from 2 for performance
     this.blockSize = 1;
     
     // Block types with colors
@@ -23,6 +23,9 @@ class World {
     
     // Initialize caches
     this.initCaches();
+    
+    // Add a temporary ground plane so player has something to stand on
+    this.addGroundPlane();
   }
   
   initCaches() {
@@ -40,6 +43,19 @@ class World {
     }
     
     this.geometryCache.set('block', geometry);
+  }
+  
+  addGroundPlane() {
+    // Temporary large ground plane so player always has something to stand on
+    const planeGeometry = new THREE.PlaneGeometry(200, 200);
+    const planeMaterial = new THREE.MeshLambertMaterial({ 
+      color: 0x7cbd6b,
+      side: THREE.DoubleSide
+    });
+    const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+    plane.rotation.x = -Math.PI / 2; // Rotate to be horizontal
+    plane.position.y = 0; // At Y=0
+    this.scene.add(plane);
   }
   
   // Simple noise function for terrain
@@ -178,6 +194,9 @@ class World {
   
   // Check if position is solid (for collision)
   isSolid(x, y, z) {
+    // Ground plane at Y=0
+    if (y <= 0) return true;
+    
     const block = this.getBlock(Math.floor(x), Math.floor(y), Math.floor(z));
     return block && block.userData.type !== 'water';
   }
