@@ -5,14 +5,14 @@ class Player {
     this.world = world;
     
     // Position and movement  
-    this.position = new THREE.Vector3(0, 30, 0); // Start higher so we can see the fall
+    this.position = new THREE.Vector3(0, 10, 0); // Spawn closer to ground
     this.velocity = new THREE.Vector3(0, 0, 0);
-    this.rotation = { x: -0.3, y: 0 }; // Look slightly down to see terrain
+    this.rotation = { x: 0, y: 0 }; // Look straight ahead
     
-    // Physics
-    this.speed = 5;
-    this.jumpForce = 8;
-    this.gravity = -25;
+    // Physics - Minecraft-like
+    this.speed = 4.3; // Slower, more controlled
+    this.jumpForce = 7; // Lower jump
+    this.gravity = -20; // Less floaty
     this.isGrounded = false;
     this.height = 1.8;
     this.radius = 0.3;
@@ -225,10 +225,10 @@ class Player {
     this.jumping = false;
   }
   
-  // Rotate camera
+  // Rotate camera - Minecraft-like sensitivity
   rotate(deltaX, deltaY) {
-    this.rotation.y -= deltaX * 0.002;
-    this.rotation.x -= deltaY * 0.002;
+    this.rotation.y -= deltaX * 0.0015; // Less sensitive horizontal
+    this.rotation.x -= deltaY * 0.0015; // Less sensitive vertical
     
     // Clamp vertical rotation
     this.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.rotation.x));

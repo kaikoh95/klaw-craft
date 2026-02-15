@@ -65,10 +65,10 @@ class Game {
       200 // Increased from 1000 to match fog distance
     );
     
-    // Renderer
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    // Renderer - Pixelated Minecraft style
+    this.renderer = new THREE.WebGLRenderer({ antialias: false }); // No antialiasing for pixelated look
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit for mobile performance
+    this.renderer.setPixelRatio(1); // Force 1:1 for blocky pixels
     document.body.appendChild(this.renderer.domElement);
     
     // Lighting
