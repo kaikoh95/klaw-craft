@@ -4,7 +4,7 @@ class World {
     this.scene = scene;
     this.blocks = new Map();
     this.chunkSize = 16;
-    this.renderDistance = 2; // Back to 2 since we're only doing surface blocks
+    this.renderDistance = 1; // Reduced to 1 for performance (32x32 area)
     this.blockSize = 1;
     
     // Block types with colors
@@ -121,22 +121,10 @@ class World {
       for (let z = centerZ - halfSize; z < centerZ + halfSize; z++) {
         const height = this.getTerrainHeight(x, z);
         
-        // Only place surface blocks (top 2 layers) for performance
-        const startY = Math.max(1, height - 1);
-        for (let y = startY; y <= height; y++) {
-          let blockType;
-          
-          if (y === height) {
-            // Top layer
-            blockType = height < 6 ? 'sand' : 'grass';
-          } else {
-            // One layer below
-            blockType = height < 6 ? 'sand' : 'dirt';
-          }
-          
-          this.placeBlock(x, y, z, blockType);
-          blockCount++;
-        }
+        // Only place top surface layer for maximum performance
+        const blockType = height < 6 ? 'sand' : 'grass';
+        this.placeBlock(x, height, z, blockType);
+        blockCount++;
         
         // Add water at low points
         if (height < 5) {
