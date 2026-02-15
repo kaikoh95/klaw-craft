@@ -5,9 +5,9 @@ class Player {
     this.world = world;
     
     // Position and movement  
-    this.position = new THREE.Vector3(0, 15, 0); // Start at Y:15, should land on terrain around Y:8-10
+    this.position = new THREE.Vector3(0, 30, 0); // Start higher so we can see the fall
     this.velocity = new THREE.Vector3(0, 0, 0);
-    this.rotation = { x: 0, y: 0 };
+    this.rotation = { x: -0.3, y: 0 }; // Look slightly down to see terrain
     
     // Physics
     this.speed = 5;

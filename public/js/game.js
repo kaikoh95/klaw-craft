@@ -62,7 +62,7 @@ class Game {
       75,
       window.innerWidth / window.innerHeight,
       0.1,
-      1000
+      200 // Increased from 1000 to match fog distance
     );
     
     // Renderer

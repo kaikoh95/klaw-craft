@@ -4,7 +4,7 @@ class World {
     this.scene = scene;
     this.blocks = new Map();
     this.chunkSize = 16;
-    this.renderDistance = 1; // Reduced from 2 for performance
+    this.renderDistance = 2; // Back to 2 since we're only doing surface blocks
     this.blockSize = 1;
     
     // Block types with colors
@@ -112,47 +112,48 @@ class World {
     }
   }
   
-  // Generate initial terrain
+  // Generate initial terrain - only surface blocks for performance
   generateTerrain(centerX, centerZ) {
     const halfSize = this.chunkSize * this.renderDistance;
+    let blockCount = 0;
     
     for (let x = centerX - halfSize; x < centerX + halfSize; x++) {
       for (let z = centerZ - halfSize; z < centerZ + halfSize; z++) {
         const height = this.getTerrainHeight(x, z);
         
-        // Generate vertical column
-        for (let y = 0; y <= height; y++) {
+        // Only place surface blocks (top 2 layers) for performance
+        const startY = Math.max(1, height - 1);
+        for (let y = startY; y <= height; y++) {
           let blockType;
           
           if (y === height) {
             // Top layer
             blockType = height < 6 ? 'sand' : 'grass';
-          } else if (y > height - 3) {
-            // Below top
-            blockType = height < 6 ? 'sand' : 'dirt';
           } else {
-            // Deep underground
-            blockType = 'stone';
+            // One layer below
+            blockType = height < 6 ? 'sand' : 'dirt';
           }
           
           this.placeBlock(x, y, z, blockType);
+          blockCount++;
         }
         
         // Add water at low points
         if (height < 5) {
           for (let y = height + 1; y <= 5; y++) {
             this.placeBlock(x, y, z, 'water');
+            blockCount++;
           }
         }
         
-        // Place trees on grass
-        if (height >= 6 && this.shouldPlaceTree(x, z)) {
-          this.placeTree(x, height + 1, z);
-        }
+        // Trees - skip for now to reduce load
+        // if (height >= 6 && this.shouldPlaceTree(x, z)) {
+        //   this.placeTree(x, height + 1, z);
+        // }
       }
     }
     
-    console.log(`Generated terrain: ${this.blocks.size} blocks`);
+    console.log(`Generated terrain: ${blockCount} blocks (surface only)`);
   }
   
   // Place a block in the world
